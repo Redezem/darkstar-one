@@ -53,5 +53,5 @@ class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 		void ResizePerspectiveMatrix();
 		double** GetCurrentLookAtMatrix;
 		void BuildModelViewMatrix();
-
+		void Zoom();
 }

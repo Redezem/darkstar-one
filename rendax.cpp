@@ -22,6 +22,7 @@ Rendax::Rendax()
 void Rendax::DrawWorld()
 {
 	currentTick++;
+	Zoom();
 	if(pauseAll==0)
 	{
 		if(animationActive==1)
@@ -243,3 +244,18 @@ void Rendax::GetRotFactor(int* XReturn, int* YReturn)
 
 //Private Function Time!
 
+void SetStockLookAtMatrix()
+{
+	ResizePerspectiveMatrix();
+	gluLookAt(	0.0,0.0,0.5,
+			0.0,0.0,0.0,
+			0.0,1.0,0.0);
+	currentLookAtMatrix[0][0]=currentLookAtMatrix[0][1]=currentLookAtMatrix[1][0]=currentLookAtMatrix[1][1]=currentLookAtMatrix[1][2]=currentLookAtMatrix[2][0]=currentLookAtMatrix[2][2]=0.0;
+	currentLookAtMatrix[0][2]=0.5;
+	currentLookAtMatrix[2][1]=1.0;
+}
+
+void ComputeAnimation()
+{
+	
+}
