@@ -20,28 +20,38 @@ class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 	AnimationSegmentList animList;
 
 	//time for some functions!
-	 public:
-	Rendax();
-	void DrawWorld();
-	void RescaleWorld(int, int);
-	void SetLookAt(double[3][3]);
-	void SetZoomFactor(double);
-	void IncrementZoomFactor(int);
-	void SetSpeedFactor(double);
-	void IncrementSpeedFactor(int);
-	void SetRotFactor(double,double);
-	void IncrementRotFactor(int,int);
-	void Animation(int);
-	void Pause(int);
-	void AddObject(GraphicObject);
-	void AddLight(LightObject);
-	void AddMenu(MenuObject);
-	void AddAnim(double[3][3],double[3][3], int);
+	public:
+		Rendax();
+		void DrawWorld();
+		void RescaleWorld(int, int);
+		void SetLookAt(double[3][3]);
+		void SetZoomFactor(double);
+		void IncrementZoomFactor(int);
+		void SetSpeedFactor(double);
+		void IncrementSpeedFactor(int);
+		void SetRotFactor(double,double);
+		void IncrementRotFactor(int,int);
+		void Animation(int);
+		void Pause(int);
+		void AddObject(GraphicObject);
+		void AddLight(LightObject);
+		void AddMenu(MenuObject);
+		void AddAnim(double[3][3],double[3][3], int);
+	
+		double GetZoomFactor();
+		double GetSpeedFactor();
+		int GetTick();
+		int GetAnim();
+		int GetPause();
+		void GetRotFactor(int*, int*);
 
-	double GetZoomFactor();
-	double GetSpeedFactor();
-	double GetTick();
-	double GetAnim();
-	double GetPause();
-	void GetRotFactor(int*, int*);
+	private:
+		void SetStockLookAtMatrix();
+		void ComputeAnimation();
+		void ComputeXRot();
+		void ComputeYRot();
+		void ResizePerspectiveMatrix();
+		double** GetCurrentLookAtMatrix;
+		void BuildModelViewMatrix();
+
 }

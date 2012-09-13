@@ -11,28 +11,30 @@
 //#include "BetterCube.h"
 //that done, let's get ON IT! YEAH!
 
-Rendax renderer;
+struct{ //Hack because C++ is painful to work with
+	Rendax renderer;
+} Superstruct;
 
 void display()
 {
 //	BCdisplay();
-	renderer.DrawWorld();
+	Superstruct.renderer.DrawWorld();
 }
 
 void reshape(int w, int h)
 {
 //	BCreshape(w,h);
-	renderer.RescaleWorld(w,h);
+	Superstruct.renderer.RescaleWorld(w,h);
 }
 
 void keyboardInput(unsigned char c, int x, int y)
 {
-	renderer.MenuInput(c,x,y);
+	Superstruct.renderer.MenuInput(c,x,y);
 }
 
 void init()
 {
-	renderer= new Rendax;
+	
 //	BCinit();
 }
 

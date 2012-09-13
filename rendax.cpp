@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 #include "rendax.h"
 
 Rendax::Rendax()
@@ -181,7 +185,7 @@ void Rendax::AddMenu(MenuObject newOption)
 
 void Rendax::AddAnim(double startAt[3][3],double endAt[3][3],int frames)
 {
-	double atomChange[3][3],framedPoints[frames][3][3];
+	double atomChange[3][3],frameBuffer[3][3];
 	int i,j,k;
 	
 	for(i=0;i<3;i++)
@@ -189,17 +193,53 @@ void Rendax::AddAnim(double startAt[3][3],double endAt[3][3],int frames)
 		for(j=0;j<3;j++)
 		{
 			atomChange[i][j]=(endAt[i][j]-startAt[i][j])/frames;
-			framedPoints[0][i][j]=startAt[i][j];
+			frameBuffer[i][j]=startAt[i][j];
 		}
 	}
+	animList.push(frameBuffer);
 	for(k=1;k<frames;k++)
 	{
 		for(i=0;i<3;i++)
 		{
 			for(j=0;j<3;j++)
 			{
-				
+				frameBuffer[i][j]=frameBuffer[i][j]+atomChange[i][j];
 			}
 		}
+		animList.push(frameBuffer);
 	}
 }
+
+double Rendax::GetZoomFactor()
+{
+	return currentZoomFactor;
+}
+
+double Rendax::GetSpeedFactor()
+{
+	return currentSpeedFactor;
+}
+
+int Rendax::GetTick()
+{
+	return currentTick;
+}
+
+int Rendax::GetAnim()
+{
+	return animationActive;
+}
+
+int Rendax::GetPause()
+{
+	return pauseAll;
+}
+
+void Rendax::GetRotFactor(int* XReturn, int* YReturn)
+{
+	*XReturn=currentXRotFactor;
+	*YReturn=currentYRotFactor;
+}
+
+//Private Function Time!
+
