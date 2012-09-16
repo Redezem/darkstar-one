@@ -60,7 +60,7 @@ void Rendax::RescaleWorld(int width, int height)
 	aspectRatio=width/height;
 	lightingList.killLights();
 	ResizePerspectiveMatrix();
-	SetLookAt(GetCurrentLookAtMatrix());
+	SetLookAt(currentLookAtMatrix);
 	objectList.ScaleAll(scalerRatio);
 	lightingList.ScaleAll(scalerRatio);
 	animList.ScaleAll(scalerRatio);
