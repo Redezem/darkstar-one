@@ -9,7 +9,8 @@ Rendax::Rendax()
 	windowHeight=windowWidth=500.0;
 	aspectRatio=1.0;
 	SetStockLookAtMatrix();
-	currentZoomFactor=currentSpeedFactor=1.0;
+	currentZoomFactor=1.0;
+	currentSpeedFactor=0.1;
 	currentXRotFactor=currentYRotFactor=0.0;
 	animationActive=animationStartTick=currentTick=pauseAll=0;
 	bufferNumber=1;
@@ -21,7 +22,7 @@ Rendax::Rendax()
 
 void Rendax::DrawWorld()
 {
-	currentTick++;
+	currentTick+(int)(currentSpeedFactor*10.0);
 	Zoom();
 	if(pauseAll==0)
 	{
@@ -37,6 +38,7 @@ void Rendax::DrawWorld()
 		{
 			ComputeYRot();
 		}
+		animList.draw();
 		objectList.draw();
 		lightingList.draw();
 		menuList.draw();
@@ -45,7 +47,7 @@ void Rendax::DrawWorld()
 
 void Rendax::RescaleWorld(int width, int height)
 {
-	double scalerRatio=1;
+	double scalerRatio=1.0;
 	if(height<=width)
 	{
 		scalerRatio=height/500.0;
@@ -131,7 +133,8 @@ void Rendax::SetRotFactor(double newXFac,double newYFac)
 }
 
 void Rendax::IncrementRotFactor(int Xinc, int Yinc)
-{	
+{
+	if(Xinc!=0 && currentXRotFactor==0 &&	
 	if(Xinc>0)
 	{
 		currentXRotFactor=currentXRotFactor+0.1;
@@ -162,6 +165,10 @@ void Rendax::IncrementRotFactor(int Xinc, int Yinc)
 void Rendax::Animation(int state)
 {
 	animationActive=state;
+	if(state!=0)
+	{
+		animationStartTick=currentTick;
+	}
 }
 
 void Rendax::Pause(int state)
@@ -244,7 +251,7 @@ void Rendax::GetRotFactor(int* XReturn, int* YReturn)
 
 //Private Function Time!
 
-void SetStockLookAtMatrix()
+private void Rendax::SetStockLookAtMatrix()
 {
 	ResizePerspectiveMatrix();
 	gluLookAt(	0.0,0.0,0.5,
@@ -255,7 +262,16 @@ void SetStockLookAtMatrix()
 	currentLookAtMatrix[2][1]=1.0;
 }
 
-void ComputeAnimation()
+private void Rendax::ComputeAnimation()
 {
-	
+	int animTick=currentTick-animationStartTick;
+	animList.animate(animTick);
+	objectList.animate(animTick);
+	lightingList.animate(animTick);
+	//that *should* do...
+}
+
+private void Rendax::ComputeXRot()
+{
+	animList.XRot(
 }

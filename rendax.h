@@ -13,7 +13,7 @@
 class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 {
 	double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], currentZoomFactor, currentSpeedFactor, currentXRotFactor, currentYRotFactor;
-	int animationActive, animationStartTick, currentTick, pauseAll, bufferNumber;
+	int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber;
 	GraphicObjectList objectList;
 	LightingObjectList lightingList;
 	MenuObjectList menuList;
