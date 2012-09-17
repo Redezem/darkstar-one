@@ -12,7 +12,8 @@ Rendax::Rendax()
 	currentZoomFactor=1.0;
 	currentSpeedFactor=0.1;
 	currentXRotFactor=currentYRotFactor=0.0;
-	animationActive=animationStartTick=currentTick=pauseAll=0;
+	animationActive=animationStartTick=currentTick=0;
+	pauseAll=1;
 	bufferNumber=1;
 	objectList=new GraphicObjectList;
 	lightingList=new LightingObjectList;
@@ -134,7 +135,14 @@ void Rendax::SetRotFactor(double newXFac,double newYFac)
 
 void Rendax::IncrementRotFactor(int Xinc, int Yinc)
 {
-	if(Xinc!=0 && currentXRotFactor==0 &&	
+	if(Xinc!=0 && currentXRotFactor==0 && xRotStartTick==0)
+	{
+		xRotStartTick=currentTick;
+	}
+	if(Yinc!=0 && currentYRotFactor==0 && yRotStartTick==0)
+	{
+		yRotStartTick=currentTick;
+	}
 	if(Xinc>0)
 	{
 		currentXRotFactor=currentXRotFactor+0.1;
@@ -273,5 +281,5 @@ private void Rendax::ComputeAnimation()
 
 private void Rendax::ComputeXRot()
 {
-	animList.XRot(
+	animList.XRot();
 }
