@@ -2,7 +2,13 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+
+#include "object.h"
 #include "rendax.h"
+#include "objectlist.h"
+#include "lightinglist.h"
+#include "menulist.h"
+#include "animlist.h"
 
 Rendax::Rendax()
 {
@@ -56,7 +62,7 @@ void Rendax::DrawWorld()
 		yRotStartTick++;
 	}
 
-	
+	glutSwapBuffers();
 }
 
 void Rendax::RescaleWorld(int width, int height)
