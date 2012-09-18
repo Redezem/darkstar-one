@@ -24,7 +24,6 @@ Rendax::Rendax()
 void Rendax::DrawWorld()
 {
 	currentTick+(int)(currentSpeedFactor*10.0);
-	Zoom();
 	if(pauseAll==0)
 	{
 		if(animationActive==1)
@@ -44,6 +43,20 @@ void Rendax::DrawWorld()
 		lightingList.draw();
 		menuList.draw();
 	}
+	if(animationStartTick!=0 && (pauseAll!=0 || animationActive==0))
+	{
+		animationStartTick++;
+	}
+	if(xRotStartTick!=0 && (pauseAll!=0 || currentXRotFactor==0.0))
+	{
+		xRotStartTick++;
+	}
+	if(yRotStartTick!=0 && (pauseAll!=0 || currentYRotFactor==0.0))
+	{
+		yRotStartTick++;
+	}
+
+	
 }
 
 void Rendax::RescaleWorld(int width, int height)
@@ -67,7 +80,7 @@ void Rendax::RescaleWorld(int width, int height)
 	objectList.ScaleAll(scalerRatio);
 	lightingList.ScaleAll(scalerRatio);
 	animList.ScaleAll(scalerRatio);
-	BuildModelViewMatrix();	
+	lightingList.enableLights();
 }
 
 void Rendax::SetLookAt(double newLookAtMatrix[3][3])
@@ -273,13 +286,29 @@ private void Rendax::SetStockLookAtMatrix()
 private void Rendax::ComputeAnimation()
 {
 	int animTick=currentTick-animationStartTick;
-	animList.animate(animTick);
-	objectList.animate(animTick);
-	lightingList.animate(animTick);
+	animList.animate(animTick,(int)currentSpeedFactor*10.0);
+	objectList.animate(animTick,(int)currentSpeedFactor*10.0);
+	lightingList.animate(animTick,(int)currentSpeedFactor*10.0);
 	//that *should* do...
 }
 
 private void Rendax::ComputeXRot()
 {
-	animList.XRot();
+	int xRotTick=currentTick-xRotStartTick;
+	animList.XRot(xRotTick,currentXRotFactor);
+}
+
+private void Rendax::ComputeYRot()
+{
+	int yRotTick=currentTick-yRotStartTick;
+	animList.YRot(yRotTick,currentXRotFactor);
+}
+
+private void Rendax::ResizePerspectiveMatrix()
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective((40.0/currentZoomFactor),aspectRatio,1.0,100.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }

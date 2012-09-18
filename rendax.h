@@ -51,7 +51,5 @@ class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 		void ComputeXRot();
 		void ComputeYRot();
 		void ResizePerspectiveMatrix();
-		double** GetCurrentLookAtMatrix;
 		void BuildModelViewMatrix();
-		void Zoom();
 }
