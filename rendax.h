@@ -1,23 +1,23 @@
 #include <stdio.h>
+#include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
 
 #include "object.h"
-#include "light.h"
+//#include "light.h"
 #include "objectlist.h"
-#include "lightinglist.h"
-#include "menulist.h"
-#include "animlist.h"
+//#include "lightinglist.h"
+//#include "menulist.h"
+//#include "animlist.h"
 
 class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 {
 	double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], currentZoomFactor, currentSpeedFactor, currentXRotFactor, currentYRotFactor;
 	int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber;
 	GraphicObjectList objectList;
-	LightingObjectList lightingList;
-	MenuObjectList menuList;
-	AnimationSegmentList animList;
+	//LightingObjectList lightingList;
+	//MenuObjectList menuList;
+	//AnimationSegmentList animList;
 
 	//time for some functions!
 	public:
@@ -34,8 +34,8 @@ class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 		void Animation(int);
 		void Pause(int);
 		void AddObject(GraphicObject);
-		void AddLight(LightObject);
-		void AddMenu(MenuObject);
+		//void AddLight(LightObject);
+		//void AddMenu(MenuObject);
 		void AddAnim(double[3][3],double[3][3], int);
 	
 		double GetZoomFactor();
@@ -52,4 +52,4 @@ class Rendax //BOW BEFORE THE ALMIGHTY RendAX!
 		void ComputeYRot();
 		void ResizePerspectiveMatrix();
 		void BuildModelViewMatrix();
-}
+};

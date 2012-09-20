@@ -1,14 +1,16 @@
 #include <stdio.h>
+#include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
 
 #include "object.h"
 
 class GraphicObjectList //A list of stuff that needs to render n stuff
 {
 	public:
-		GraphicObject* front, back, cur;
+		GraphicObject* front; 
+		GraphicObject* back;
+		GraphicObject* cur;
 		GraphicObjectList();
 		void draw();
 		void ScaleAll(int);
@@ -16,3 +18,4 @@ class GraphicObjectList //A list of stuff that needs to render n stuff
 		void cut(int);
 		void animate(int,int);
 	}
+;

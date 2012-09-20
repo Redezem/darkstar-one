@@ -3,18 +3,17 @@
 #include <GL/glu.h>
 #include <stdlib.h>
 
+#include "Cube.h"
 
-#include "objectlist.h"
-#include "object.h"
 //warning: Gratuitous use of the heap ahead
-GraphicObjectList::GraphicObjectList()
+CubeList::CubeList()
 {
 	front=NULL;
 	back=NULL;
 	cur=NULL;
 }
 
-void GraphicObjectList::draw()
+void CubeList::draw()
 {
 	if(front!=NULL)
 	{
@@ -28,25 +27,25 @@ void GraphicObjectList::draw()
 	}
 }
 
-void GraphicObjectList::push(GraphicObject newObject)
+void CubeList::push(CubeObject newObject)
 {
 	if(front==NULL)
 	{
 		//class interrogation would be good
-		front=new GraphicObject;
+		front=new CubeObject;
 		front->copyAll(newObject);
 		back=front;
 	}
 	else
 	{
 		//need to put class interrogation here
-		*back.next=(GraphicObject*)malloc(sizeof(GraphicObject));
-		memcpy(*back.next, newObject, sizeof(GraphicObject));
-		back=*back.next;
+		back->next=new CubeObject;
+		back->next->copyAll(newObject);
+		back=back->next;
 	}
 }
 
-void GraphicObjectList::ScaleAll(int scaleVal)
+void CubeList::ScaleAll(int scaleVal)
 {
 	cur=front;
 	do
@@ -56,11 +55,11 @@ void GraphicObjectList::ScaleAll(int scaleVal)
 	}while(cur!=back);
 }
 
-void GraphicObjectList::cut(int number)
+void CubeList::cut(int number)
 {
 	int i;
 	cur=front;
-	GraphicObject* herpaderp; //too tired. So help me.
+	CubeObject* herpaderp; //too tired. So help me.
 	for(i=0;i!=number;i++) //this stops the one before the one required to be blown up
 	{
 		if(cur->next!=NULL) //Avoid *ALL* the Segfaults! :D
@@ -80,7 +79,7 @@ void GraphicObjectList::cut(int number)
 	}
 }
 
-void GraphicObjectList::animate(int animationTick, int animationSpeed)
+void CubeList::animate(int animationTick, int animationSpeed)
 {
 	int correctedAnimationTick;
 	correctedAnimationTick=animationTick*animationSpeed;
@@ -90,5 +89,29 @@ void GraphicObjectList::animate(int animationTick, int animationSpeed)
 		cur->animate(correctedAnimationTick);
 		cur=cur->next;
 	}while(cur!=back);
+	
+}
+
+CubeObject::CubeObject()
+{
+	next=NULL;
+	scaleVal=1;
+}
+
+void CubeObject::animate(int inboundTick)
+{
+	int tempAnim, animDiff, i;
+	tempAnim=animationTick;
+	animationTick=animationTick+(inboundTick/animationSpeedFactor);
+	animDiff=animationTick-tempAnim;
+	for(i=0;i<animDiff;i++)
+	{
+		animationTheta=animationTheta+animationDeltaTheta;
+		animationPhi=animationPhi+animationDeltaPhi;
+	}
+}
+
+void CubeObject::draw()
+{
 	
 }
