@@ -15,6 +15,16 @@ GraphicObjectList::GraphicObjectList()
 
 void GraphicObjectList::draw()
 {
+	if(front!=NULL)
+	{
+		cur=front;
+		while(*cur.next!=NULL)
+		{
+			*cur.draw();
+			cur=*cur.next;
+		}
+		*cur.draw();
+	}
 }
 
 void GraphicObjectList::push(GraphicObject newObject)
@@ -27,6 +37,7 @@ void GraphicObjectList::push(GraphicObject newObject)
 	}
 	else
 	{
+		//need to put class interrogation here
 		*back.next=(GraphicObject*)malloc(sizeof(GraphicObject));
 		memcpy(*back.next, newObject, sizeof(GraphicObject));
 		back=*back.next;
@@ -39,7 +50,7 @@ void GraphicObjectList::ScaleAll(int scaleVal)
 	do
 	{
 		*cur.scaleVal=scaleVal;
-		cur=*front.next;
+		cur=*cur.next;
 	}while(cur!=back);
 }
 
@@ -69,4 +80,13 @@ void GraphicObjectList::cut(int number)
 
 void GraphicObjectList::animate(int animationTick, int animationSpeed)
 {
+	int correctedAnimationTick;
+	correctedAnimationTick=animationTick*animationSpeed;
+	cur=front;
+	do
+	{
+		*cur.animate(correctedAnimationTick);
+		cur=*cur.next;
+	}while(cur!=back);
+	
 }
