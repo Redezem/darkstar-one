@@ -94,8 +94,14 @@ void CubeList::animate(int animationTick, int animationSpeed)
 
 CubeObject::CubeObject()
 {
+	int i;
 	next=NULL;
 	scaleVal=1;
+	
+	for(i=0;i<4;i++)
+	{
+		positionMatrix[i][i]=1;
+	}
 }
 
 void CubeObject::animate(int inboundTick)
@@ -113,5 +119,52 @@ void CubeObject::animate(int inboundTick)
 
 void CubeObject::draw()
 {
-	
+	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+	int i;
+//	glPushMatrix();
+	//glMultMatrixf(&betterMatrix[0]);
+	for(i=0;i<6;i++)
+	{
+	glBegin(GL_QUADS);
+	glNormal3fv(&normals[i][0]);
+	glVertex3fv(&vertexes[faces[i][0]][0]);
+	glVertex3fv(&vertexes[faces[i][1]][0]);
+	glVertex3fv(&vertexes[faces[i][2]][0]);
+	glVertex3fv(&vertexes[faces[i][3]][0]);
+	glEnd();
+	}
+//	glPopMatrix();
+}
+
+void CubeObject::copyAll(CubeObject newCube)
+{
+	int i,j;
+	scaleVal=newCube.scaleVal;
+	animationOn=newCube.animationOn;
+	animationTick=newCube.animationTick;
+	animationRadius=newCube.animationRadius;
+	animationTheta=newCube.animationTheta;
+	animationPhi=newCube.animationPhi;
+	animationDeltaTheta=newCube.animationDeltaTheta;
+	animationDeltaPhi=newCube.animationDeltaPhi;
+	animationSpeedFactor=newCube.animationSpeedFactor;
+
+	for(i=0;i<8;i++)
+	{
+		for(j=0;j<3;j++)
+		{
+			vertexes[i][j]=newCube.vertexes[i][j];
+		}
+	}
+	for(i=0;i<6;i++)
+	{
+		for(j=0;j<3;j++)
+		{
+			normals[i][j]=newCube.normals[i][j];
+		}
+		for(j=0;j<4;j++)
+		{
+			faces[i][j]=newCube.faces[i][j];
+		}
+	}
 }

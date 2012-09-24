@@ -17,6 +17,8 @@ class CubeObject //A Cube. What else?
 		int animationOn;
 		int animationTick;
 		float animationRadius, animationTheta, animationPhi, animationDeltaTheta, animationDeltaPhi, animationSpeedFactor;
+	
+		float positionMatrix[4][4];//this is cols rows not rows cols
 
 		void draw();
 		void animate(int);
