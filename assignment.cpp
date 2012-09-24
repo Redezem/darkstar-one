@@ -1,4 +1,7 @@
 #include <stdio.h>
+#ifdef WIN32
+#include <Windows.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/glu.h>
@@ -11,6 +14,7 @@
 double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], currentZoomFactor, currentSpeedFactor, currentXRotFactor, currentYRotFactor;
 int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber;
 
+CubeList* cuboids=new CubeList;
 CubeObject* cube=new CubeObject;
 //spherelist
 //polygonlist
@@ -64,7 +68,7 @@ void display()
 	{
 		if(animationActive==1)
 		{
-		///	ComputeAnimation();
+			ComputeAnimation();
 		}
 		if(currentXRotFactor!=0.0)
 		{
@@ -90,7 +94,8 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //	glutSolidSphere(1, 20, 20);
-		cube->draw();
+		//cube->draw();
+		cuboids->draw();
 		//Put the things that need to be drawn here
 	glutSwapBuffers();
 
@@ -153,7 +158,7 @@ for(i=0;i<6;i++)
 	cube->vertexes[2][1] = cube->vertexes[3][1] = cube->vertexes[6][1] = cube->vertexes[7][1] = 1;
  	cube->vertexes[0][2] = cube->vertexes[3][2] = cube->vertexes[4][2] = cube->vertexes[7][2] = 1;
  	cube->vertexes[1][2] = cube->vertexes[2][2] = cube->vertexes[5][2] = cube->vertexes[6][2] = -1;
-	
+	cuboids->push(*cube);
 	
 	MakeLights();
 	
