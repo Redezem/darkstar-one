@@ -113,7 +113,7 @@ void CubeObject::animate(int inboundTick)
 		animationTheta=animationTheta+animationDeltaTheta;
 		animationPhi=animationPhi+animationDeltaPhi;
 		
-		printf("Thet:%f Phi:%f\n", animationTheta,animationPhi);
+		//printf("Thet:%f Phi:%f\n", animationTheta,animationPhi);
 //	}
 }
 

@@ -13,7 +13,7 @@
 //#include "object.h"
 //Ripped from Rendax
 double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], currentZoomFactor, currentSpeedFactor, currentXRotFactor, currentYRotFactor;
-int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber;
+int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber, capmode,fullscreen;
 
 CubeList* cuboids=new CubeList;
 //spherelist
@@ -25,10 +25,14 @@ GLfloat light_ambient[] = {1.0,0.0,0.0,1.0};
 
 void idle(void)
 {
+	if(capmode!=0)
+	{
+	Sleep(17);
+	}
 	glutPostRedisplay();
 }
 
-void MatMult4(float* AIN, float* BIN, float* OUT)
+void MatMult4(float* AIN, float* BIN, float* OUTAGE)
 {
 	const int N=4;
 	float A[N][N], B[N][N], C[N][N];
@@ -63,7 +67,7 @@ void MatMult4(float* AIN, float* BIN, float* OUT)
 	{
 		for(j=0;j<4;j++)
 		{
-			OUT[k]=C[i][j];
+			OUTAGE[k]=C[i][j];
 			k++;	
 		}	
 	}
@@ -81,12 +85,20 @@ void ResizePerspectiveMatrix()
 void SetStockLookAtMatrix()
 {
 	ResizePerspectiveMatrix();
-	gluLookAt(	0.0,0.0,20,
+	gluLookAt(	0.0,0.0,20.0,
 			0.0,0.0,0.0,
 			0.0,1.0,0.0);
 	currentLookAtMatrix[0][0]=currentLookAtMatrix[0][1]=currentLookAtMatrix[1][0]=currentLookAtMatrix[1][1]=currentLookAtMatrix[1][2]=currentLookAtMatrix[2][0]=currentLookAtMatrix[2][2]=0.0;
-	currentLookAtMatrix[0][2]=0.5;
+	currentLookAtMatrix[0][2]=20;
 	currentLookAtMatrix[2][1]=1.0;
+}
+
+void RegenerateLookAtMatrix()
+{
+	ResizePerspectiveMatrix();
+	gluLookAt(	currentLookAtMatrix[0][0],currentLookAtMatrix[0][1],currentLookAtMatrix[0][2],
+				currentLookAtMatrix[1][0],currentLookAtMatrix[1][1],currentLookAtMatrix[1][2],
+				currentLookAtMatrix[2][0],currentLookAtMatrix[2][1],currentLookAtMatrix[2][2]);
 }
 
 
@@ -141,17 +153,18 @@ void display()
 		yRotStartTick++;
 	}
 	
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
-	glTranslatef(0,0,-5);
-	glutSolidSphere(0.5, 10, 10);
+	glutSolidSphere(0.5, 90, 90);
 	glPopMatrix();
 
 	cuboids->animate(1,1);
 		//cube->draw();
 		cuboids->draw();
 		//Put the things that need to be drawn here
-	printf("ran\n");
+//	printf("ran\n");
+
 	glutSwapBuffers();
 
 }
@@ -162,8 +175,71 @@ void reshape(int w, int h)
 	//Superstruct.renderer->RescaleWorld(w,h);
 }
 
+void SwitchCapMode()
+{
+	if(capmode!=0)
+	{
+		capmode=0;
+	}
+	else
+	{
+		capmode=1;
+	}
+}
+
+void SizeChange()
+{
+	if( aspectRatio==1)
+	{
+		aspectRatio=1.7;
+		glutReshapeWindow(889,500);
+		RegenerateLookAtMatrix();
+	}
+	else
+	{
+		aspectRatio=1;
+		glutReshapeWindow(500,500);
+		RegenerateLookAtMatrix();
+	}
+}
+
+void FullScreen16by9()
+{
+	if(fullscreen==0)
+	{
+	aspectRatio=1.7;
+	glutFullScreen();
+	RegenerateLookAtMatrix();
+	fullscreen=1;
+	}
+	else
+	{
+		glutReshapeWindow(889,500);
+		RegenerateLookAtMatrix();
+	}
+}
+
 void keyboardInput(unsigned char c, int x, int y)
 {
+	switch(c)
+	{
+	case ('c'):
+		SwitchCapMode();
+		printf("Switch!\n");
+		break;
+	case ('w'):
+		SizeChange();
+		break;
+	case ('f'):
+		FullScreen16by9();
+		break;
+	case ('q'):
+		exit(0);
+		break;
+	}
+	
+
+
 	//Superstruct.renderer->MenuInput(c,x,y);
 }
 
@@ -175,19 +251,22 @@ void init()
 			      0,1,0,0,
 			      0,0,1,0,
 			      0,0,-10,1};
-	float cubeMatrix2[16]={	cos(-20),0,sin(-20),0,
+	float cubeMatrix2[16]={	cos(-20.0),0,sin(-20.0),0,
 			       	0,1,0,0,
-			       	-sin(-20),0,cos(-20),0,
+			       	-sin(-20.0),0,cos(-20.0),0,
 				0,0,0,1};
 	CubeObject* cube=new CubeObject;
-	windowHeight=windowWidth=500.0;
-	aspectRatio=16/9;
+	windowHeight=500.0;
+	windowWidth=889.0;
+	aspectRatio=1.7;
 	currentZoomFactor=1.0;
 	currentSpeedFactor=0.1;
 	currentXRotFactor=currentYRotFactor=0.0;
 	animationActive=animationStartTick=currentTick=0;
 	pauseAll=0;
 	animationActive=1;
+	fullscreen=0;
+	capmode=0;
 	glEnable(GL_DEPTH_TEST);
 	SetStockLookAtMatrix();	
 
@@ -255,6 +334,7 @@ for(i=0;i<6;i++)
 
 int main(int argc, char **argv)
 {
+	//putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(889,500);
@@ -262,7 +342,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 //	glutReshapeFunc(reshape);
-//	glutKeyboardFunc(keyboardInput);
+	glutKeyboardFunc(keyboardInput);
 	init();
 	glutMainLoop();
 	return 0;
