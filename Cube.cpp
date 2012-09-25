@@ -83,13 +83,14 @@ void CubeList::cut(int number)
 void CubeList::animate(int animationTick, int animationSpeed)
 {
 	int correctedAnimationTick;
-	correctedAnimationTick=animationTick*animationSpeed;
+	correctedAnimationTick=animationTick;
 	cur=front;
-	do
+	while(cur!=back)
 	{
 		cur->animate(correctedAnimationTick);
 		cur=cur->next;
-	}while(cur!=back);
+	}
+	cur->animate(correctedAnimationTick);
 	
 }
 
@@ -99,31 +100,35 @@ CubeObject::CubeObject()
 	next=NULL;
 	scaleVal=1;
 	
-	for(i=0;i<4;i++)
-	{
-		positionMatrix[i][i]=1;
-	}
 }
 
 void CubeObject::animate(int inboundTick)
 {
-	int tempAnim, animDiff, i;
+/*	int tempAnim, animDiff, i;
 	tempAnim=animationTick;
 	animationTick=animationTick+(inboundTick/animationSpeedFactor);
 	animDiff=animationTick-tempAnim;
 	for(i=0;i<animDiff;i++)
-	{
+	{*/
 		animationTheta=animationTheta+animationDeltaTheta;
 		animationPhi=animationPhi+animationDeltaPhi;
-	}
+		
+		printf("Thet:%f Phi:%f\n", animationTheta,animationPhi);
+//	}
 }
 
 void CubeObject::draw()
 {
-	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+//	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,-5,1};
 	int i;
-//	glPushMatrix();
-	//glMultMatrixf(&betterMatrix[0]);
+	glPushMatrix();
+	glRotatef(animationPhi,0.0,1,0);
+	glMultMatrixf(&positionMatrix[0]);
+//	glRotatef(60,1.0,0.0,0.0);
+//	glRotatef(-20,0.0,0.0,1.0);
+
+	glRotatef(animationTheta,1.0,0,0);
+		
 	for(i=0;i<6;i++)
 	{
 	glBegin(GL_QUADS);
@@ -134,7 +139,7 @@ void CubeObject::draw()
 	glVertex3fv(&vertexes[faces[i][3]][0]);
 	glEnd();
 	}
-//	glPopMatrix();
+	glPopMatrix();
 }
 
 void CubeObject::copyAll(CubeObject newCube)
@@ -167,5 +172,9 @@ void CubeObject::copyAll(CubeObject newCube)
 		{
 			faces[i][j]=newCube.faces[i][j];
 		}
+	}
+	for(i=0;i<16;i++)
+	{
+		positionMatrix[i]=newCube.positionMatrix[i];
 	}
 }

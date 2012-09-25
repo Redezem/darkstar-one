@@ -18,7 +18,10 @@ GLfloat light_position[] = {1.0,1.0,1.0,0.0};
 void drawBox()
 {
 	int i;
-
+akeLights()
+{
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	
 	for (i=0;i<6;i++)
 	{
 		glBegin(GL_QUADS);

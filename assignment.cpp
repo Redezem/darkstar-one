@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -15,18 +16,64 @@ double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], curren
 int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber;
 
 CubeList* cuboids=new CubeList;
-CubeObject* cube=new CubeObject;
 //spherelist
 //polygonlist
 
-GLfloat light_diffuse[] = {1.0,0.0,0.0,1.0};
+GLfloat light_diffuse[] = {1.0,1.0,1.0,1.0};
 GLfloat light_position[] = {1.0,1.0,1.0,0.0};
+GLfloat light_ambient[] = {1.0,0.0,0.0,1.0};
+
+void idle(void)
+{
+	glutPostRedisplay();
+}
+
+void MatMult4(float* AIN, float* BIN, float* OUT)
+{
+	const int N=4;
+	float A[N][N], B[N][N], C[N][N];
+	int i,j,k;
+	k=0;
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<4;j++)
+		{
+			A[i][j]=AIN[k];
+//			printf("A=%f\n", A[i][j]);
+			B[i][j]=BIN[k];
+//			printf("B=%f\n", B[i][j]);
+			k++;
+		}
+	}
+
+
+       float sum;
+       for (i = 0; i < N; i++) {
+          for (j = 0; j < N; j++) {
+           sum = 0;
+            for (k = 0; k < N; k++) {
+             sum += A[i][k] * B[k][j];
+//		printf("sum=%f\n", sum);
+                       }
+             C[i][j] = sum;
+               }
+       }
+	k=0;
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<4;j++)
+		{
+			OUT[k]=C[i][j];
+			k++;	
+		}	
+	}
+}
 
 void ResizePerspectiveMatrix()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective((40.0/currentZoomFactor),aspectRatio,1.0,10.0);
+	gluPerspective((40.0/currentZoomFactor),aspectRatio,1.0,100.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -34,7 +81,7 @@ void ResizePerspectiveMatrix()
 void SetStockLookAtMatrix()
 {
 	ResizePerspectiveMatrix();
-	gluLookAt(	0.0,0.0,0.5,
+	gluLookAt(	0.0,0.0,20,
 			0.0,0.0,0.0,
 			0.0,1.0,0.0);
 	currentLookAtMatrix[0][0]=currentLookAtMatrix[0][1]=currentLookAtMatrix[1][0]=currentLookAtMatrix[1][1]=currentLookAtMatrix[1][2]=currentLookAtMatrix[2][0]=currentLookAtMatrix[2][2]=0.0;
@@ -51,8 +98,10 @@ void ComputeAnimation()
 void MakeLights()
 {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
 	glEnable(GL_LIGHTING);
 
 }
@@ -91,12 +140,18 @@ void display()
 	{
 		yRotStartTick++;
 	}
-
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	glutSolidSphere(1, 20, 20);
+	glPushMatrix();
+	glTranslatef(0,0,-5);
+	glutSolidSphere(0.5, 10, 10);
+	glPopMatrix();
+
+	cuboids->animate(1,1);
 		//cube->draw();
 		cuboids->draw();
 		//Put the things that need to be drawn here
+	printf("ran\n");
 	glutSwapBuffers();
 
 }
@@ -116,23 +171,47 @@ void keyboardInput(unsigned char c, int x, int y)
 
 void init()
 {
+	float cubeMatrix[16]={1,0,0,0,
+			      0,1,0,0,
+			      0,0,1,0,
+			      0,0,-10,1};
+	float cubeMatrix2[16]={	cos(-20),0,sin(-20),0,
+			       	0,1,0,0,
+			       	-sin(-20),0,cos(-20),0,
+				0,0,0,1};
+	CubeObject* cube=new CubeObject;
 	windowHeight=windowWidth=500.0;
-	aspectRatio=1.0;
+	aspectRatio=16/9;
 	currentZoomFactor=1.0;
 	currentSpeedFactor=0.1;
 	currentXRotFactor=currentYRotFactor=0.0;
 	animationActive=animationStartTick=currentTick=0;
-	pauseAll=1;
+	pauseAll=0;
+	animationActive=1;
 	glEnable(GL_DEPTH_TEST);
-	SetStockLookAtMatrix();
+	SetStockLookAtMatrix();	
 
+	int i=0;
+	int j=0;
+	cubeMatrix[5]=(float)cos(60.0);
+	cubeMatrix[6]=(float)(sin(60.0)*-1);
+	cubeMatrix[9]=(float)sin(60.0);
+	cubeMatrix[10]=(float)cos(60.0);
+//	cubeMatrix[14]=(float)(cos(60.0)*-10);
+//	cubeMatrix[13]=(float)(sin(60.0)*-10);
+	
+//	cubeMatrix[i]=cubeMatrix2[i]*cubeMatrix[i];
+	MatMult4(&cubeMatrix2[0], &cubeMatrix[0], &cubeMatrix[0]);
+/*	for(i=0;i<16;i++)
+	{
+	printf("%f\n", cubeMatrix[i]);
+	}
+*/	
+	glPushMatrix();
 	glTranslatef(0.0,0.0,-5.0);
 	glRotatef(60,1.0,0.0,0.0);
 	glRotatef(-20,0.0,0.0,1.0);
-
 	
-	int i=0;
-int j=0;
 
 	GLfloat n[6][3] = {  /* Normals for the 6 faces of a cube. */
 	  {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
@@ -158,10 +237,18 @@ for(i=0;i<6;i++)
 	cube->vertexes[2][1] = cube->vertexes[3][1] = cube->vertexes[6][1] = cube->vertexes[7][1] = 1;
  	cube->vertexes[0][2] = cube->vertexes[3][2] = cube->vertexes[4][2] = cube->vertexes[7][2] = 1;
  	cube->vertexes[1][2] = cube->vertexes[2][2] = cube->vertexes[5][2] = cube->vertexes[6][2] = -1;
+	for(i=0;i<16;i++)
+	{
+		cube->positionMatrix[i]=cubeMatrix[i];
+	}
+	cube->animationTheta=1;
+	cube->animationDeltaTheta=0.1;
+	cube->animationPhi=1;
+	cube->animationDeltaPhi=0.1;
 	cuboids->push(*cube);
 	
 	MakeLights();
-	
+	glPopMatrix();	
 //	BCinit();
 }
 
@@ -170,9 +257,10 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(500,500);
+	glutInitWindowSize(889,500);
 	glutCreateWindow("Redezem's Assignment");
 	glutDisplayFunc(display);
+	glutIdleFunc(idle);
 //	glutReshapeFunc(reshape);
 //	glutKeyboardFunc(keyboardInput);
 	init();
