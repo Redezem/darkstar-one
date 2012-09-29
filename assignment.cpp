@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #ifdef WIN32
 #include <Windows.h>
@@ -27,7 +28,9 @@ void idle(void)
 {
 	if(capmode!=0)
 	{
+	#ifdef WIN32
 	Sleep(17);
+	#endif
 	}
 	glutPostRedisplay();
 }
@@ -156,7 +159,7 @@ void display()
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
-	glutSolidSphere(0.5, 90, 90);
+	glutSolidSphere(8, 90, 90);
 	glPopMatrix();
 
 	cuboids->animate(1,1);
@@ -251,6 +254,7 @@ void init()
 			      0,1,0,0,
 			      0,0,1,0,
 			      0,0,-10,1};
+	float cubeMatrix3[16];
 	float cubeMatrix2[16]={	cos(-20.0),0,sin(-20.0),0,
 			       	0,1,0,0,
 			       	-sin(-20.0),0,cos(-20.0),0,
@@ -280,7 +284,9 @@ void init()
 //	cubeMatrix[13]=(float)(sin(60.0)*-10);
 	
 //	cubeMatrix[i]=cubeMatrix2[i]*cubeMatrix[i];
-	MatMult4(&cubeMatrix2[0], &cubeMatrix[0], &cubeMatrix[0]);
+	MatMult4(&cubeMatrix2[0], &cubeMatrix[0], &cubeMatrix3[0]);
+	cubeMatrix[14]=0.0;
+	cubeMatrix[12]=10.0;
 /*	for(i=0;i<16;i++)
 	{
 	printf("%f\n", cubeMatrix[i]);
@@ -318,14 +324,19 @@ for(i=0;i<6;i++)
  	cube->vertexes[1][2] = cube->vertexes[2][2] = cube->vertexes[5][2] = cube->vertexes[6][2] = -1;
 	for(i=0;i<16;i++)
 	{
-		cube->positionMatrix[i]=cubeMatrix[i];
+		cube->positionMatrix[i]=cubeMatrix3[i];
 	}
 	cube->animationTheta=1;
 	cube->animationDeltaTheta=0.1;
 	cube->animationPhi=1;
 	cube->animationDeltaPhi=0.1;
 	cuboids->push(*cube);
-	
+	MatMult4(&cubeMatrix2[0],&cubeMatrix[0], &cubeMatrix3[0]);
+	for(i=0;i<16;i++)
+	{
+		cube->positionMatrix[i]=cubeMatrix3[i];
+}
+	cuboids->push(*cube);	
 	MakeLights();
 	glPopMatrix();	
 //	BCinit();
