@@ -9,6 +9,7 @@
 #include <GL/glu.h>
 
 #include "Cube.h"
+#include "Sphere.h"
 //including objects
 //#include "rendax.h"
 //#include "object.h"
@@ -17,7 +18,7 @@ double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], curren
 int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber, capmode,fullscreen;
 
 CubeList* cuboids=new CubeList;
-//spherelist
+SphereList* spheroids=new SphereList;
 //polygonlist
 
 GLfloat light_diffuse[] = {1.0,1.0,1.0,1.0};
@@ -159,12 +160,13 @@ void display()
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
-	glutSolidSphere(8, 90, 90);
+	//glutSolidSphere(8, 90, 90);
 	glPopMatrix();
 
 	cuboids->animate(1,1);
 		//cube->draw();
 		cuboids->draw();
+		spheroids->draw();
 		//Put the things that need to be drawn here
 //	printf("ran\n");
 
@@ -250,6 +252,10 @@ void keyboardInput(unsigned char c, int x, int y)
 
 void init()
 {
+	float ident[16]={	1,0,0,0,
+						0,1,0,0,
+						0,0,1,0,
+						0,0,0,1};
 	float cubeMatrix[16]={1,0,0,0,
 			      0,1,0,0,
 			      0,0,1,0,
@@ -259,6 +265,7 @@ void init()
 			       	0,1,0,0,
 			       	-sin(-20.0),0,cos(-20.0),0,
 				0,0,0,1};
+	SphereObject* sphere=new SphereObject;
 	CubeObject* cube=new CubeObject;
 	windowHeight=500.0;
 	windowWidth=889.0;
@@ -335,8 +342,19 @@ for(i=0;i<6;i++)
 	for(i=0;i<16;i++)
 	{
 		cube->positionMatrix[i]=cubeMatrix3[i];
+		sphere->positionMatrix[i]=ident[i];
 }
 	cuboids->push(*cube);	
+	sphere->radius=8;
+	sphere->slices=90;
+	sphere->squares=90;
+	sphere->animationTheta=0;
+	sphere->animationDeltaTheta=0;
+	sphere->animationPhi=0;
+	sphere->animationDeltaPhi=0;
+	spheroids->push(*sphere);
+	delete cube;
+	delete sphere;
 	MakeLights();
 	glPopMatrix();	
 //	BCinit();
