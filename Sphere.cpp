@@ -4,17 +4,17 @@
 #include <GL/glu.h>
 
 
-#include "Cube.h"
+#include "Sphere.h"
 
 //warning: Gratuitous use of the heap ahead
-CubeList::CubeList()
+SphereList::SphereList()
 {
 	front=NULL;
 	back=NULL;
 	cur=NULL;
 }
 
-void CubeList::draw()
+void SphereList::draw()
 {
 	if(front!=NULL)
 	{
@@ -28,25 +28,25 @@ void CubeList::draw()
 	}
 }
 
-void CubeList::push(CubeObject newObject)
+void SphereList::push(SphereObject newObject)
 {
 	if(front==NULL)
 	{
 		//class interrogation would be good
-		front=new CubeObject;
+		front=new SphereObject;
 		front->copyAll(newObject);
 		back=front;
 	}
 	else
 	{
 		//need to put class interrogation here
-		back->next=new CubeObject;
+		back->next=new SphereObject;
 		back->next->copyAll(newObject);
 		back=back->next;
 	}
 }
 
-void CubeList::ScaleAll(int scaleVal)
+void SphereList::ScaleAll(int scaleVal)
 {
 	cur=front;
 	do
@@ -56,11 +56,11 @@ void CubeList::ScaleAll(int scaleVal)
 	}while(cur!=back);
 }
 
-void CubeList::cut(int number)
+void SphereList::cut(int number)
 {
 	int i;
 	cur=front;
-	CubeObject* herpaderp; //too tired. So help me.
+	SphereObject* herpaderp; //too tired. So help me.
 	for(i=0;i!=number;i++) //this stops the one before the one required to be blown up
 	{
 		if(cur->next!=NULL) //Avoid *ALL* the Segfaults! :D
@@ -80,7 +80,7 @@ void CubeList::cut(int number)
 	}
 }
 
-void CubeList::animate(int animationTick, int animationSpeed)
+void SphereList::animate(int animationTick, int animationSpeed)
 {
 	int correctedAnimationTick;
 	correctedAnimationTick=animationTick;
@@ -94,7 +94,7 @@ void CubeList::animate(int animationTick, int animationSpeed)
 	
 }
 
-CubeObject::CubeObject()
+SphereObject::SphereObject()
 {
 	int i;
 	next=NULL;
@@ -102,7 +102,7 @@ CubeObject::CubeObject()
 	
 }
 
-void CubeObject::animate(int inboundTick)
+void SphereObject::animate(int inboundTick)
 {
 /*	int tempAnim, animDiff, i;
 	tempAnim=animationTick;
@@ -117,7 +117,7 @@ void CubeObject::animate(int inboundTick)
 //	}
 }
 
-void CubeObject::draw()
+void SphereObject::draw()
 {
 //	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,-5,1};
 	int i;
@@ -128,21 +128,13 @@ void CubeObject::draw()
 //	glRotatef(-20,0.0,0.0,1.0);
 
 	glRotatef(animationTheta,1.0,0,0);
-		
-	for(i=0;i<6;i++)
-	{
-	glBegin(GL_QUADS);
-	glNormal3fv(&normals[i][0]);
-	glVertex3fv(&vertexes[faces[i][0]][0]);
-	glVertex3fv(&vertexes[faces[i][1]][0]);
-	glVertex3fv(&vertexes[faces[i][2]][0]);
-	glVertex3fv(&vertexes[faces[i][3]][0]);
-	glEnd();
-	}
+	
+	glutSolidSphere(radius,slices,squares);
+	
 	glPopMatrix();
 }
 
-void CubeObject::copyAll(CubeObject newCube)
+void SphereObject::copyAll(SphereObject newCube)
 {
 	int i,j;
 	scaleVal=newCube.scaleVal;
@@ -155,24 +147,10 @@ void CubeObject::copyAll(CubeObject newCube)
 	animationDeltaPhi=newCube.animationDeltaPhi;
 	animationSpeedFactor=newCube.animationSpeedFactor;
 
-	for(i=0;i<8;i++)
-	{
-		for(j=0;j<3;j++)
-		{
-			vertexes[i][j]=newCube.vertexes[i][j];
-		}
-	}
-	for(i=0;i<6;i++)
-	{
-		for(j=0;j<3;j++)
-		{
-			normals[i][j]=newCube.normals[i][j];
-		}
-		for(j=0;j<4;j++)
-		{
-			faces[i][j]=newCube.faces[i][j];
-		}
-	}
+	radius=newCube.radius;
+	slices=newCube.slices;
+	squares=newCube.squares;
+	
 	for(i=0;i<16;i++)
 	{
 		positionMatrix[i]=newCube.positionMatrix[i];
