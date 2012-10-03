@@ -10,6 +10,7 @@
 
 #include "Cube.h"
 #include "Sphere.h"
+#include "Polygon.h"
 //including objects
 //#include "rendax.h"
 //#include "object.h"
@@ -19,11 +20,16 @@ int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTi
 
 CubeList* cuboids=new CubeList;
 SphereList* spheroids=new SphereList;
-//polygonlist
+PolyList* polys=new PolyList;
 
-GLfloat light_diffuse[] = {1.0,1.0,1.0,1.0};
+GLfloat light_diffuse[] = {1.0,0.0,0.0,1.0};
 GLfloat light_position[] = {1.0,1.0,1.0,0.0};
-GLfloat light_ambient[] = {1.0,0.0,0.0,1.0};
+GLfloat light_ambient[] = {1.0,1.0,1.0,1.0};
+GLfloat light_specular[] = {0.0,0.0,1.0,1.0};
+GLfloat specular_position[] = {-1.0,1.0,1.0,0.0};
+
+float specReflection[] = { 0.8, 0.8, 0.8, 1.0 };
+
 
 void idle(void)
 {
@@ -89,7 +95,7 @@ void ResizePerspectiveMatrix()
 void SetStockLookAtMatrix()
 {
 	ResizePerspectiveMatrix();
-	gluLookAt(	0.0,0.0,20.0,
+	gluLookAt(	0.0,0.0,30.0,
 			0.0,0.0,0.0,
 			0.0,1.0,0.0);
 	currentLookAtMatrix[0][0]=currentLookAtMatrix[0][1]=currentLookAtMatrix[1][0]=currentLookAtMatrix[1][1]=currentLookAtMatrix[1][2]=currentLookAtMatrix[2][0]=currentLookAtMatrix[2][2]=0.0;
@@ -115,9 +121,12 @@ void MakeLights()
 {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT2, GL_POSITION, specular_position);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT2);
 	glEnable(GL_LIGHTING);
 
 }
@@ -167,6 +176,7 @@ void display()
 		//cube->draw();
 		cuboids->draw();
 		spheroids->draw();
+		polys->draw();
 		//Put the things that need to be drawn here
 //	printf("ran\n");
 
@@ -265,8 +275,14 @@ void init()
 			       	0,1,0,0,
 			       	-sin(-20.0),0,cos(-20.0),0,
 				0,0,0,1};
+	float cubeMatrix4[16]={	cos(-90.0),0,sin(-90.0),0,
+				0,1,0,0,
+				-sin(-90.0),0,cos(-90.0),0,
+				0,0,0,1};
+	float polymatrix[16];
 	SphereObject* sphere=new SphereObject;
 	CubeObject* cube=new CubeObject;
+	PolyObject* poly=new PolyObject;
 	windowHeight=500.0;
 	windowWidth=889.0;
 	aspectRatio=1.7;
@@ -292,8 +308,8 @@ void init()
 	
 //	cubeMatrix[i]=cubeMatrix2[i]*cubeMatrix[i];
 	MatMult4(&cubeMatrix2[0], &cubeMatrix[0], &cubeMatrix3[0]);
-	cubeMatrix[14]=0.0;
-	cubeMatrix[12]=10.0;
+//	cubeMatrix[14]=0.0;
+//	cubeMatrix[12]=10.0;
 /*	for(i=0;i<16;i++)
 	{
 	printf("%f\n", cubeMatrix[i]);
@@ -338,13 +354,25 @@ for(i=0;i<6;i++)
 	cube->animationPhi=1;
 	cube->animationDeltaPhi=0.1;
 	cuboids->push(*cube);
-	MatMult4(&cubeMatrix2[0],&cubeMatrix[0], &cubeMatrix3[0]);
+	cube->positionMatrix[14]=0.0;
+	cube->positionMatrix[12]=10.0;
+	cuboids->push(*cube);
+	cube->positionMatrix[12]=-10.0;
+	cuboids->push(*cube);
+	cube->positionMatrix[12]=0.0;
+	cube->positionMatrix[14]=10.0;
+	cuboids->push(*cube);
 	for(i=0;i<16;i++)
 	{
-		cube->positionMatrix[i]=cubeMatrix3[i];
 		sphere->positionMatrix[i]=ident[i];
-}
-	cuboids->push(*cube);	
+		poly->positionMatrix[i]=ident[i];
+//		printf("%f\n",cubeMatrix3[i]);
+	}
+//	printf("-------------------\n");
+//	for(i=0;i<16;i++)
+//	{
+//		printf("%f\n",cube->positionMatrix[i]);
+//	}
 	sphere->radius=8;
 	sphere->slices=90;
 	sphere->squares=90;
@@ -353,9 +381,29 @@ for(i=0;i<6;i++)
 	sphere->animationPhi=0;
 	sphere->animationDeltaPhi=0;
 	spheroids->push(*sphere);
+	poly->animationTheta=0;
+	poly->animationPhi=0;
+	poly->animationDeltaTheta=0;
+	poly->animationDeltaPhi=0;
+	poly->normal[0]=0.0;
+	poly->normal[1]=1.0;
+	poly->normal[2]=0.0;
+	poly->vertexes[0][0]=poly->vertexes[1][0]=-40.0;
+	poly->vertexes[0][2]=poly->vertexes[3][2]=-40.0;
+	poly->vertexes[1][2]=poly->vertexes[2][2]=40.0;
+	poly->vertexes[2][0]=poly->vertexes[3][0]=40.0;
+	poly->vertexes[0][1]=poly->vertexes[1][1]=poly->vertexes[2][1]=poly->vertexes[3][1]=0.0;
+	poly->positionMatrix[13]=-15.0;
+	polys->push(*poly);
+	poly->positionMatrix[13]=15.0;
+	poly->positionMatrix[5]=-1.0;
+	polys->push(*poly);
+	delete poly;
 	delete cube;
 	delete sphere;
 	MakeLights();
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
+	glMateriali(GL_FRONT, GL_SHININESS, 56);
 	glPopMatrix();	
 //	BCinit();
 }
