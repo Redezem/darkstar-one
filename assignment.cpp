@@ -87,7 +87,7 @@ void ResizePerspectiveMatrix()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective((40.0/currentZoomFactor),aspectRatio,1.0,100.0);
+	gluPerspective((40.0/currentZoomFactor),aspectRatio,1.0,200.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -99,7 +99,7 @@ void SetStockLookAtMatrix()
 			0.0,0.0,0.0,
 			0.0,1.0,0.0);
 	currentLookAtMatrix[0][0]=currentLookAtMatrix[0][1]=currentLookAtMatrix[1][0]=currentLookAtMatrix[1][1]=currentLookAtMatrix[1][2]=currentLookAtMatrix[2][0]=currentLookAtMatrix[2][2]=0.0;
-	currentLookAtMatrix[0][2]=20;
+	currentLookAtMatrix[0][2]=30;
 	currentLookAtMatrix[2][1]=1.0;
 }
 
@@ -262,7 +262,7 @@ void keyboardInput(unsigned char c, int x, int y)
 
 void init()
 {
-	float ident[16]={	1,0,0,0,
+	float ident[16]={			1,0,0,0,
 						0,1,0,0,
 						0,0,1,0,
 						0,0,0,1};
@@ -398,6 +398,28 @@ for(i=0;i<6;i++)
 	poly->positionMatrix[13]=15.0;
 	poly->positionMatrix[5]=-1.0;
 	polys->push(*poly);
+	poly->positionMatrix[5]=0.0;
+	poly->positionMatrix[13]=0.0;
+	poly->positionMatrix[6]=1.0;
+	poly->positionMatrix[9]=-1.0;
+	poly->positionMatrix[10]=0.0;
+	poly->positionMatrix[14]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=40.0;
+	polys->push(*poly);
+	for(i=0;i<16;i++)
+	{
+		poly->positionMatrix[i]=ident[i];
+	}
+	poly->positionMatrix[1]=1;
+	poly->positionMatrix[0]=0;
+	poly->positionMatrix[4]=-1;
+	poly->positionMatrix[5]=0;
+	poly->positionMatrix[12]=40;
+	polys->push(*poly);
+	poly->positionMatrix[1]=-1;
+	poly->positionMatrix[12]=-40;
+	polys->push(*poly);
 	delete poly;
 	delete cube;
 	delete sphere;
@@ -411,7 +433,7 @@ for(i=0;i<6;i++)
 
 int main(int argc, char **argv)
 {
-	//putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
+	putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(889,500);
