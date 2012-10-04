@@ -398,7 +398,7 @@ for(i=0;i<6;i++)
 	sphere->positionMatrix[6]=-1.0;
 	sphere->positionMatrix[9]=1.0;
 	sphere->positionMatrix[10]=0.0;
-	sphere->setTexture("world.jpg");
+	sphere->setTexture("World.jpg");
 	sphere->blend=1;
 	sphere->blendFactor=0.8;
 	spheroids->push(*sphere);
