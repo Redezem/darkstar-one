@@ -13,7 +13,12 @@ class SphereObject //A Sphere. What else?
 		double radius;
 		int slices;
 		int squares;
+		GLUquadricObj *sphere;
 
+		GLuint texture[1];
+
+		int blend;
+		float blendFactor;
 
 		int animationOn;
 		int animationTick;
@@ -29,6 +34,7 @@ class SphereObject //A Sphere. What else?
 		void draw();
 		void animate(int);
 		void copyAll(SphereObject);
+		void setTexture(char* inTex);
 };
 
 

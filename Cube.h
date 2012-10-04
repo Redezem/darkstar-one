@@ -14,6 +14,13 @@ class CubeObject //A Cube. What else?
 		GLfloat normals[6][3];
 		GLint faces[6][4];
 
+		GLuint texture[1];
+		float texSRepeat;
+		float texTRepeat;
+
+		int blend;
+		float blendFactor;
+
 		int animationOn;
 		int animationTick;
 		float animationRadius, animationTheta, animationPhi, animationDeltaTheta, animationDeltaPhi, animationSpeedFactor;
@@ -28,6 +35,7 @@ class CubeObject //A Cube. What else?
 		void draw();
 		void animate(int);
 		void copyAll(CubeObject);
+		void setTexture(char* inTex);
 };
 
 

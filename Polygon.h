@@ -13,6 +13,13 @@ class PolyObject //A Polygon. What else?
 		float normal[3];
 		float vertexes[4][3];
 
+		GLuint texture[1];
+		float texSRepeat;
+		float texTRepeat;
+
+		int blend;
+		float blendFactor;
+
 		int animationOn;
 		int animationTick;
 		float animationRadius, animationTheta, animationPhi, animationDeltaTheta, animationDeltaPhi, animationSpeedFactor;
@@ -27,6 +34,7 @@ class PolyObject //A Polygon. What else?
 		void draw();
 		void animate(int);
 		void copyAll(PolyObject);
+		void setTexture(char* inTex);
 };
 
 

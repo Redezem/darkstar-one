@@ -2,7 +2,13 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#ifdef WIN32
+#include <SOIL.h>
+#else
+#include "SOIL/SOIL.h"
+#endif
 
+#include "TextureLoader.h"
 
 #include "Sphere.h"
 
@@ -96,10 +102,19 @@ void SphereList::animate(int animationTick, int animationSpeed)
 
 SphereObject::SphereObject()
 {
-	int i;
+
 	next=NULL;
 	scaleVal=1;
 	
+	texture[0]=0;
+	sphere= gluNewQuadric();
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	gluQuadricTexture(sphere, GL_TRUE);
+	gluQuadricNormals(sphere, GLU_SMOOTH);
+
+	blend=0;
+	blendFactor=1.0;
+
 }
 
 void SphereObject::animate(int inboundTick)
@@ -120,7 +135,7 @@ void SphereObject::animate(int inboundTick)
 void SphereObject::draw()
 {
 //	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,-5,1};
-	int i;
+
 	glPushMatrix();
 	glRotatef(animationPhi,0.0,1,0);
 	glMultMatrixf(&positionMatrix[0]);
@@ -128,15 +143,32 @@ void SphereObject::draw()
 //	glRotatef(-20,0.0,0.0,1.0);
 
 	glRotatef(animationTheta,1.0,0,0);
+	if(blend!=0)
+	{
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glColor4f(1.0,1.0,1.0,blendFactor);
+	}
 	
-	glutSolidSphere(radius,slices,squares);
-	
+	if(texture[0]!=0)
+	{
+	//	printf("woop\n");
+		glBindTexture(GL_TEXTURE_2D, texture[0]); 
+	}
+
+	gluSphere(sphere, radius,slices,squares);
+	if(blend!=0)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glColor4f(1.0,1.0,1.0,1.0);
+	}
 	glPopMatrix();
 }
 
 void SphereObject::copyAll(SphereObject newCube)
 {
-	int i,j;
+	int i;
 	scaleVal=newCube.scaleVal;
 	animationOn=newCube.animationOn;
 	animationTick=newCube.animationTick;
@@ -151,8 +183,19 @@ void SphereObject::copyAll(SphereObject newCube)
 	slices=newCube.slices;
 	squares=newCube.squares;
 	
+	texture[0]=newCube.texture[0];
+
+	blend=newCube.blend;
+	blendFactor=newCube.blendFactor;
+
 	for(i=0;i<16;i++)
 	{
 		positionMatrix[i]=newCube.positionMatrix[i];
 	}
+}
+void SphereObject::setTexture(char* inTex)
+{
+	TextureLoader(&texture[0], inTex);
+
+	printf("%d\n",texture[0]);
 }

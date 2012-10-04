@@ -2,7 +2,13 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#ifdef WIN32
+#include <SOIL.h>
+#else
+#include "SOIL/SOIL.h"
+#endif
 
+#include "TextureLoader.h"
 
 #include "Polygon.h"
 
@@ -96,10 +102,14 @@ void PolyList::animate(int animationTick, int animationSpeed)
 
 PolyObject::PolyObject()
 {
-	int i;
+
 	next=NULL;
 	scaleVal=1;
-	
+	texture[0]=0;
+	texSRepeat=texTRepeat=1.0;
+	blend=0;
+	blendFactor=1.0;
+
 }
 
 void PolyObject::animate(int inboundTick)
@@ -120,7 +130,7 @@ void PolyObject::animate(int inboundTick)
 void PolyObject::draw()
 {
 //	float betterMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,-5,1};
-	int i;
+
 	glPushMatrix();
 	glRotatef(animationPhi,0.0,1,0);
 	glMultMatrixf(&positionMatrix[0]);
@@ -129,6 +139,23 @@ void PolyObject::draw()
 
 	glRotatef(animationTheta,1.0,0,0);
 
+	if(blend!=0)
+	{
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glColor4f(1.0,1.0,1.0,blendFactor);
+	}
+
+	if(texture!=0){
+	glBindTexture(GL_TEXTURE_2D, texture[0]); 
+	glBegin(GL_QUADS);
+	glNormal3fv(&normal[0]);
+	glTexCoord2f(0.0,1.0*texTRepeat); glVertex3fv(&vertexes[0][0]);
+	glTexCoord2f(0.0,0.0); glVertex3fv(&vertexes[1][0]);
+	glTexCoord2f(1.0*texSRepeat,0.0); glVertex3fv(&vertexes[2][0]);
+	glTexCoord2f(1.0*texSRepeat,1.0*texTRepeat); glVertex3fv(&vertexes[3][0]);
+	glEnd();
+	}else{
 	glBegin(GL_QUADS);
 	glNormal3fv(&normal[0]);
 	glVertex3fv(&vertexes[0][0]);
@@ -136,7 +163,13 @@ void PolyObject::draw()
 	glVertex3fv(&vertexes[2][0]);
 	glVertex3fv(&vertexes[3][0]);
 	glEnd();
-	
+	}
+	if(blend!=0)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glColor4f(1.0,1.0,1.0,1.0);
+	}
 	glPopMatrix();
 }
 
@@ -153,6 +186,14 @@ void PolyObject::copyAll(PolyObject newCube)
 	animationDeltaPhi=newCube.animationDeltaPhi;
 	animationSpeedFactor=newCube.animationSpeedFactor;
 
+	texSRepeat=newCube.texSRepeat;
+	texTRepeat=newCube.texTRepeat;
+
+	blend=newCube.blend;
+	blendFactor=newCube.blendFactor;
+
+	texture[0]=newCube.texture[0];
+
 	for(i=0;i<4;i++)
 	{
 		for(j=0;j<3;j++)
@@ -166,4 +207,11 @@ void PolyObject::copyAll(PolyObject newCube)
 	{
 		positionMatrix[i]=newCube.positionMatrix[i];
 	}
+}
+
+void PolyObject::setTexture(char* inTex)
+{
+	TextureLoader(&texture[0], inTex);
+
+	printf("%d\n",texture[0]);
 }

@@ -22,13 +22,14 @@ CubeList* cuboids=new CubeList;
 SphereList* spheroids=new SphereList;
 PolyList* polys=new PolyList;
 
-GLfloat light_diffuse[] = {1.0,0.0,0.0,1.0};
+GLfloat light_diffuse[] = {1.0,1.0,1.0,1.0};
 GLfloat light_position[] = {1.0,1.0,1.0,0.0};
 GLfloat light_ambient[] = {1.0,1.0,1.0,1.0};
-GLfloat light_specular[] = {0.0,0.0,1.0,1.0};
+GLfloat light_specular[] = {1.0,1.0,1.0,1.0};
 GLfloat specular_position[] = {-1.0,1.0,1.0,0.0};
 
 float specReflection[] = { 0.8, 0.8, 0.8, 1.0 };
+float specReflectionforSphere[] = { 1.0, 1.0, 1.0, 1.0};
 
 
 void idle(void)
@@ -175,8 +176,13 @@ void display()
 	cuboids->animate(1,1);
 		//cube->draw();
 		cuboids->draw();
-		spheroids->draw();
 		polys->draw();
+		cuboids->draw();
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specReflectionforSphere);
+		glMateriali(GL_FRONT, GL_SHININESS, 100);
+		spheroids->draw();
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
+		glMateriali(GL_FRONT, GL_SHININESS, 56);
 		//Put the things that need to be drawn here
 //	printf("ran\n");
 
@@ -294,8 +300,13 @@ void init()
 	animationActive=1;
 	fullscreen=0;
 	capmode=0;
+	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 	SetStockLookAtMatrix();	
+
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+	
 
 	int i=0;
 	int j=0;
@@ -345,6 +356,9 @@ for(i=0;i<6;i++)
 	cube->vertexes[2][1] = cube->vertexes[3][1] = cube->vertexes[6][1] = cube->vertexes[7][1] = 1;
  	cube->vertexes[0][2] = cube->vertexes[3][2] = cube->vertexes[4][2] = cube->vertexes[7][2] = 1;
  	cube->vertexes[1][2] = cube->vertexes[2][2] = cube->vertexes[5][2] = cube->vertexes[6][2] = -1;
+	cube->setTexture("borg.jpg");
+	cube->blend=1;
+	cube->blendFactor=1.0;
 	for(i=0;i<16;i++)
 	{
 		cube->positionMatrix[i]=cubeMatrix3[i];
@@ -380,6 +394,13 @@ for(i=0;i<6;i++)
 	sphere->animationDeltaTheta=0;
 	sphere->animationPhi=0;
 	sphere->animationDeltaPhi=0;
+	sphere->positionMatrix[5]=0.0;
+	sphere->positionMatrix[6]=-1.0;
+	sphere->positionMatrix[9]=1.0;
+	sphere->positionMatrix[10]=0.0;
+	sphere->setTexture("world.jpg");
+	sphere->blend=1;
+	sphere->blendFactor=0.8;
 	spheroids->push(*sphere);
 	poly->animationTheta=0;
 	poly->animationPhi=0;
@@ -394,10 +415,18 @@ for(i=0;i<6;i++)
 	poly->vertexes[2][0]=poly->vertexes[3][0]=40.0;
 	poly->vertexes[0][1]=poly->vertexes[1][1]=poly->vertexes[2][1]=poly->vertexes[3][1]=0.0;
 	poly->positionMatrix[13]=-15.0;
+	poly->texSRepeat=20.0;
+	poly->texTRepeat=20.0;
+	poly->setTexture("floor.png");
 	polys->push(*poly);
+	poly->texture[0]=0;
+	poly->setTexture("Betterfloor.jpg");
 	poly->positionMatrix[13]=15.0;
 	poly->positionMatrix[5]=-1.0;
 	polys->push(*poly);
+	poly->texSRepeat=40.0;
+	poly->texTRepeat=40.0;
+	poly->setTexture("Betterwall.jpg");
 	poly->positionMatrix[5]=0.0;
 	poly->positionMatrix[13]=0.0;
 	poly->positionMatrix[6]=1.0;
