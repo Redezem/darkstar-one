@@ -268,6 +268,7 @@ void keyboardInput(unsigned char c, int x, int y)
 
 void init()
 {
+	printf("Please wait; Loading....\n");
 	float ident[16]={			1,0,0,0,
 						0,1,0,0,
 						0,0,1,0,
@@ -357,7 +358,7 @@ for(i=0;i<6;i++)
  	cube->vertexes[0][2] = cube->vertexes[3][2] = cube->vertexes[4][2] = cube->vertexes[7][2] = 1;
  	cube->vertexes[1][2] = cube->vertexes[2][2] = cube->vertexes[5][2] = cube->vertexes[6][2] = -1;
 	cube->setTexture("borg.jpg");
-	cube->blend=1;
+//	cube->blend=1;
 	cube->blendFactor=1.0;
 	for(i=0;i<16;i++)
 	{
@@ -399,7 +400,7 @@ for(i=0;i<6;i++)
 	sphere->positionMatrix[9]=1.0;
 	sphere->positionMatrix[10]=0.0;
 	sphere->setTexture("World.jpg");
-	sphere->blend=1;
+//	sphere->blend=1;
 	sphere->blendFactor=0.8;
 	spheroids->push(*sphere);
 	poly->animationTheta=0;
@@ -419,10 +420,38 @@ for(i=0;i<6;i++)
 	poly->texTRepeat=20.0;
 	poly->setTexture("floor.png");
 	polys->push(*poly);
+	poly->positionMatrix[14]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=40.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=0.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=0.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=-40.0;
+	polys->push(*poly);
 	poly->texture[0]=0;
 	poly->setTexture("Betterfloor.jpg");
 	poly->positionMatrix[13]=15.0;
 	poly->positionMatrix[5]=-1.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=40.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=0.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=0.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=-40.0;
 	polys->push(*poly);
 	poly->texSRepeat=40.0;
 	poly->texTRepeat=40.0;
@@ -432,9 +461,13 @@ for(i=0;i<6;i++)
 	poly->positionMatrix[6]=1.0;
 	poly->positionMatrix[9]=-1.0;
 	poly->positionMatrix[10]=0.0;
-	poly->positionMatrix[14]=-40.0;
+	poly->positionMatrix[14]=-80.0;
 	polys->push(*poly);
-	poly->positionMatrix[14]=40.0;
+	poly->positionMatrix[12]=-40.0;
+	polys->push(*poly);
+	poly->positionMatrix[12]=40.0;
+	polys->push(*poly);
+	poly->positionMatrix[14]=80.0;
 	polys->push(*poly);
 	for(i=0;i<16;i++)
 	{
@@ -444,7 +477,7 @@ for(i=0;i<6;i++)
 	poly->positionMatrix[0]=0;
 	poly->positionMatrix[4]=-1;
 	poly->positionMatrix[5]=0;
-	poly->positionMatrix[12]=40;
+	poly->positionMatrix[12]=80;
 	polys->push(*poly);
 	poly->positionMatrix[1]=-1;
 	poly->positionMatrix[12]=-40;

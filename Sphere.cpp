@@ -154,7 +154,9 @@ void SphereObject::draw()
 	{
 	//	printf("woop\n");
 		glBindTexture(GL_TEXTURE_2D, texture[0]); 
-	}
+	}// else {
+	//	glBindTexture(GL_TEXUTRE_2D, 0);
+	//}
 
 	gluSphere(sphere, radius,slices,squares);
 	if(blend!=0)
