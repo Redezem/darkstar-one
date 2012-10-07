@@ -21,7 +21,7 @@
 //Ripped from Rendax
 double windowHeight, windowWidth, aspectRatio, currentLookAtMatrix[3][3], currentZoomFactor, currentSpeedFactor, currentXRotFactor, currentYRotFactor,xViewAngle,yViewAngle, distanceFromViewCenter,coneAngle;
 int animationActive, animationStartTick, xRotStartTick, yRotStartTick, currentTick, pauseAll, bufferNumber, capmode,fullscreen;
-
+//Cone definitions
 GLUquadricObj *cone;
 GLuint conetexture[1];
 //Lists
@@ -37,12 +37,12 @@ GLfloat specular_position[] = {20.0,-20.0,20.0,0.0};
 //Specular rulings
 float specReflection[] = { 0.8, 0.8, 0.8, 1.0 };
 float specReflectionforSphere[] = { 1.0, 1.0, 1.0, 1.0};
-
+//Aaah! Forgot to put this in first
 void RegenerateLookAtMatrix();
 
 void idle(void)
 {
-	//this segment does the frame limiting
+	//this segment does the frame limiting, however only works properly on Windows.
 	if(capmode!=0)
 	{
 	#ifdef WIN32
@@ -51,7 +51,7 @@ void idle(void)
 	}
 	glutPostRedisplay();
 }
-
+//Rotation functions, do some tricky trigonometry to figure out where to move the camera. Based off the Camera stack designed for RendAX.
 void ComputeYRot()
 {
 	float xZPlaneDistance, yAxisSubtended,newXAxisSubtended,newZAxisSubtended;
@@ -153,7 +153,7 @@ void RegenerateLookAtMatrix() //Use previous lookatmatrix to build the Look at m
 				currentLookAtMatrix[1][0],currentLookAtMatrix[1][1],currentLookAtMatrix[1][2],
 				currentLookAtMatrix[2][0],currentLookAtMatrix[2][1],currentLookAtMatrix[2][2]);
 }
-void DeMakeLights()
+void DeMakeLights() //Unmakes lighting, useful for the Menu when lighting should be off.
 {
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
@@ -173,13 +173,13 @@ void MakeLights() //This is effectively a computerised art student, as a friend 
 	glEnable(GL_LIGHTING);
 
 }
-void ReMakeLights()
+void ReMakeLights() //Complete refresh of the lighting system
 {
 	DeMakeLights();
 	MakeLights();
 }
 
-void DrawSomeText(char*outmsg)
+void DrawSomeText(char*outmsg) //Turns text into Bitmaps.
 {
 	glTranslated(0,-100,0);
 		glRasterPos2f(100,2500);
@@ -191,9 +191,11 @@ void DrawSomeText(char*outmsg)
 		}
 }
 
-void writeMenu()
+void writeMenu() //Write me a Menu!
 {
+	//Lighting makes the color weird depending on orientation, let's turn that off...
 	DeMakeLights();
+	//Need to be in 2D
 	glMatrixMode(GL_PROJECTION);
 	 glLoadIdentity();
 	 gluOrtho2D(0,windowWidth,0,windowHeight);
@@ -222,6 +224,7 @@ void writeMenu()
 	DrawSomeText("U/u: Toggle Fullscreen");
 	DrawSomeText("Q/q: Exit");
 	DrawSomeText("--------------------------------------");
+	//Get me out of 2D!
 	RegenerateLookAtMatrix();
 	MakeLights();
 }
@@ -233,10 +236,10 @@ void ComputeAnimation() //animation computation, no longer needed
 	//that *should* do...
 }
 */
-void DrawCone()
+void DrawCone() //The Cone!
 {
 	glPushMatrix();
-	
+	//Transparency, ON!
 	glEnable(GL_BLEND);
 	glColor4f(0.5,0.5,1.0,0.8);
 	glTranslated(0,-27,0);
@@ -244,6 +247,7 @@ void DrawCone()
 	glRotated(-90,1,0,0);
 	glBindTexture(GL_TEXTURE_2D,conetexture[0]);
 	gluCylinder(cone,0,9,20,90*currentZoomFactor,90*currentZoomFactor);
+	//Transparency... OFF!
 	glDisable(GL_BLEND);
 	glColor4f(1.0,1.0,1.0,1.0);
 	glPopMatrix();
@@ -251,7 +255,7 @@ void DrawCone()
 
 
 
-void display() //Aaah the draw function
+void display() //The draw function
 {
 //	BCdisplay();
 	//Superstruct.renderer->DrawWorld();
@@ -275,6 +279,7 @@ void display() //Aaah the draw function
 			ComputeXRot();
 		}
 	}
+	//All of this is from RendAX and could probably have been ommitted...
 	if(animationStartTick!=0 && (pauseAll!=0 || animationActive==0))
 	{
 		animationStartTick++;
@@ -288,46 +293,56 @@ void display() //Aaah the draw function
 		yRotStartTick++;
 	}
 	
-	
+	//Right, now to set up the environment
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPushMatrix();
+	//glPushMatrix();
 	//glutSolidSphere(8, 90, 90);
-	glPopMatrix();
+	//glPopMatrix();
 		
 	
-	
+	//Draw things!
 		//cube->draw();
 		cuboids->draw();
 		polys->draw();
 		DrawCone();
 		//cuboids->draw();
+
+		//Sphere should be shinier
+
 		glMaterialfv(GL_FRONT, GL_SPECULAR, specReflectionforSphere);
 		glMateriali(GL_FRONT, GL_SHININESS, 100);
 		spheroids->draw(currentZoomFactor);
+		//Make everything less shiny...
 		glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
 		glMateriali(GL_FRONT, GL_SHININESS, 56);
-		//Put the things that need to be drawn here
+		
 //	printf("ran\n");
 	//	glPushMatrix();
 		//	glEnable(GL_BLEND);
 		//	glColor4f(1.0,1.0,1.0,0.5);
+
+		//Menu Time
+
 		writeMenu();
 		//	glColor4f(1.0,1.0,1.0,1.0);
 		//	glDisable(GL_BLEND);
 	//	glPopMatrix();
+		//Make sure the lights don't move with the camera
 		ReMakeLights();
 		
+		//Cool, done, display to the screen
+
 	glutSwapBuffers();
 
 }
-
+/*
 void reshape(int w, int h)
 {
 //	BCreshape(w,h);
 	//Superstruct.renderer->RescaleWorld(w,h);
 }
-
-void SwitchCapMode()
+*/
+void SwitchCapMode() //Only for Windows, but linux will run it anyway, oh well.
 {
 	if(capmode!=0)
 	{
@@ -339,7 +354,7 @@ void SwitchCapMode()
 	}
 }
 
-void SizeChange()
+void SizeChange() //Change the size of the screen you say? No problem.
 {
 	if( aspectRatio==1)
 	{
@@ -355,7 +370,7 @@ void SizeChange()
 	}
 }
 
-void FullScreen16by9()
+void FullScreen16by9() //We assume that in the future (now) we have 16 by 9 screens for 1080p compatibility.
 {
 	if(fullscreen==0)
 	{
@@ -372,7 +387,7 @@ void FullScreen16by9()
 	}
 }
 
-void keyboardInput(unsigned char c, int x, int y)
+void keyboardInput(unsigned char c, int x, int y) //Does all the input
 {
 	switch(c)
 	{
@@ -464,8 +479,9 @@ void keyboardInput(unsigned char c, int x, int y)
 
 
 
-void init()
+void init() //Biggest function in the program, good news is it runs once and only once.
 {
+	//Load me some matricies
 	printf("Please wait; Loading....\n");
 	float ident[16]={			1,0,0,0,
 						0,1,0,0,
@@ -485,9 +501,11 @@ void init()
 				-sin(-90.0),0,cos(-90.0),0,
 				0,0,0,1};
 	float polymatrix[16];
+	//Set up the templates
 	SphereObject* sphere=new SphereObject;
 	CubeObject* cube=new CubeObject;
 	PolyObject* poly=new PolyObject;
+	//Set up RendAX stuff
 	windowHeight=500.0;
 	windowWidth=889.0;
 	aspectRatio=1.7;
@@ -505,7 +523,7 @@ void init()
 	SetStockLookAtMatrix();	
 	xViewAngle=90;
 	glShadeModel(GL_SMOOTH);
-
+	//Cone stuff...
 	cone=gluNewQuadric();
 	gluQuadricNormals(cone, GLU_SMOOTH);
 	gluQuadricTexture(cone, GLU_TRUE);
@@ -534,10 +552,11 @@ void init()
 	}
 */	
 	glPushMatrix();
-	glTranslatef(0.0,0.0,-5.0);
-	glRotatef(60,1.0,0.0,0.0);
-	glRotatef(-20,0.0,0.0,1.0);
+//	glTranslatef(0.0,0.0,-5.0);
+//	glRotatef(60,1.0,0.0,0.0);
+//	glRotatef(-20,0.0,0.0,1.0);
 	
+	//Straight from the Cube example...
 
 	GLfloat n[6][3] = {  /* Normals for the 6 faces of a cube. */
 	  {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
@@ -556,6 +575,8 @@ for(i=0;i<6;i++)
 		cube->faces[i][j]=faces[i][j];
 	}
 }
+
+//Okay! Now we start loading the RendAX stacks with stuff to Render/Animate.
 
 	cube->vertexes[0][0] = cube->vertexes[1][0] = cube->vertexes[2][0] = cube->vertexes[3][0] = -1;
  	cube->vertexes[4][0] = cube->vertexes[5][0] = cube->vertexes[6][0] = cube->vertexes[7][0] = 1;
@@ -855,10 +876,13 @@ for(i=0;i<6;i++)
 	poly->vertexes[3][2]=11;
 	poly->positionMatrix[13]=-28;
 	polys->push(*poly);
+	//All done, lets' get rid of the templates
 	delete poly;
 	delete cube;
 	delete sphere;
+	//Make the lights...
 	MakeLights();
+	//Shiny mode on...
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
 	glMateriali(GL_FRONT, GL_SHININESS, 56);
 	glPopMatrix();	
@@ -866,10 +890,11 @@ for(i=0;i<6;i++)
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char **argv) //The main function!
 {
 	putenv( (char *) "__GL_SYNC_TO_VBLANK=1" ); //This attempts to VSync the image, only works under certain conditions however (is hardware specific)
 	glutInit(&argc, argv);
+	//Ready....
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(889,500);
 	glutCreateWindow("Redezem's Assignment");
@@ -877,7 +902,9 @@ int main(int argc, char **argv)
 	glutIdleFunc(idle);
 //	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboardInput);
+	//Set....
 	init();
+	//GO!
 	glutMainLoop();
 	return 0;
 }
