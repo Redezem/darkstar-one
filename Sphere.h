@@ -22,7 +22,7 @@ class SphereObject //A Sphere. What else?
 
 		int animationOn;
 		int animationTick;
-		float animationRadius, animationTheta, animationPhi, animationDeltaTheta, animationDeltaPhi, animationSpeedFactor;
+		float animationRadius, animationTheta, animationPhi, animationDeltaTheta, animationDeltaPhi, animationSpeedFactor,zoomFactor;
 	
 		float positionMatrix[16];//this is cols rows not rows cols
 // should look like:	float betterMatrix[16]={1,0,0,0,
@@ -45,7 +45,7 @@ class SphereList //A list of stuff that needs to render n stuff
 		SphereObject* back;
 		SphereObject* cur;
 		SphereList();
-		void draw();
+		void draw(float);
 		void ScaleAll(int);
 		void push(SphereObject);
 		void cut(int);

@@ -89,7 +89,7 @@ void CubeList::cut(int number)
 void CubeList::animate(int animationTick, int animationSpeed)
 {
 	int correctedAnimationTick;
-	correctedAnimationTick=animationTick;
+	correctedAnimationTick=animationSpeed;
 	cur=front;
 	while(cur!=back)
 	{
@@ -119,8 +119,8 @@ void CubeObject::animate(int inboundTick)
 	animDiff=animationTick-tempAnim;
 	for(i=0;i<animDiff;i++)
 	{*/
-		animationTheta=animationTheta+animationDeltaTheta;
-		animationPhi=animationPhi+animationDeltaPhi;
+		animationTheta=animationTheta+(animationDeltaTheta*inboundTick);
+		animationPhi=animationPhi+(animationDeltaPhi*inboundTick);
 		
 		//printf("Thet:%f Phi:%f\n", animationTheta,animationPhi);
 //	}

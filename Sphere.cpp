@@ -20,16 +20,18 @@ SphereList::SphereList()
 	cur=NULL;
 }
 
-void SphereList::draw()
+void SphereList::draw(float newZoom)
 {
 	if(front!=NULL)
 	{
 		cur=front;
 		while(cur->next!=NULL)
 		{
+			cur->zoomFactor=newZoom;
 			cur->draw();
 			cur=cur->next;
 		}
+		cur->zoomFactor=newZoom;
 		cur->draw();
 	}
 }
@@ -55,11 +57,12 @@ void SphereList::push(SphereObject newObject)
 void SphereList::ScaleAll(int scaleVal)
 {
 	cur=front;
-	do
+	while(cur!=back)
 	{
 		cur->scaleVal=scaleVal;
 		cur=cur->next;
-	}while(cur!=back);
+	}
+	cur->scaleVal=scaleVal;
 }
 
 void SphereList::cut(int number)
@@ -89,7 +92,7 @@ void SphereList::cut(int number)
 void SphereList::animate(int animationTick, int animationSpeed)
 {
 	int correctedAnimationTick;
-	correctedAnimationTick=animationTick;
+	correctedAnimationTick=animationTick*animationSpeed;
 	cur=front;
 	while(cur!=back)
 	{
@@ -125,8 +128,8 @@ void SphereObject::animate(int inboundTick)
 	animDiff=animationTick-tempAnim;
 	for(i=0;i<animDiff;i++)
 	{*/
-		animationTheta=animationTheta+animationDeltaTheta;
-		animationPhi=animationPhi+animationDeltaPhi;
+		animationTheta=animationTheta+(animationDeltaTheta*inboundTick);
+		animationPhi=animationPhi+(animationDeltaPhi*inboundTick);
 		
 		//printf("Thet:%f Phi:%f\n", animationTheta,animationPhi);
 //	}
@@ -158,7 +161,7 @@ void SphereObject::draw()
 	//	glBindTexture(GL_TEXUTRE_2D, 0);
 	//}
 
-	gluSphere(sphere, radius,slices,squares);
+	gluSphere(sphere, radius,slices*zoomFactor,squares*zoomFactor);
 	if(blend!=0)
 	{
 		glEnable(GL_DEPTH_TEST);
