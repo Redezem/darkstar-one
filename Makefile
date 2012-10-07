@@ -7,8 +7,13 @@ assign: assignment.o Cube.o Sphere.o Polygon.o TextureLoader.o
 	cp Imurges/borg.jpg borg.jpg
 	cp Imurges/floor.png floor.png
 	cp Imurges/World.jpg World.jpg
+	cp Imurges/BlackTex.jpg BlackTex.jpg
+	cp Imurges/Door.jpg Door.jpg
+	cp Imurges/holo.jpg holo.jpg
+	cp Imurges/hologram.jpg hologram.jpg
+	cp Imurges/StarTrekTNGPanel.jpg StarTrekTNGPanel.jpg
 
-assignment.o: assignment.cpp Cube.h
+assignment.o: assignment.cpp Cube.h Sphere.h Polygon.h TextureLoader.h
 	g++ -c assignment.cpp
 
 Cube.o: Cube.cpp Cube.h
