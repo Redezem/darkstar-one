@@ -1,8 +1,8 @@
-CG200 Assignment 2
+RendAX Rendering Engine
 
-By Stefan Prandl
+Authored By: Redezem
 
-To run this, first type in "make" at the command line, then type in "./assign" at the command line. 
+To run this, first type in "make" at the command line, then type in "./assign" at the command line. You will need SOIL, and the texture library. These will be avaliable at www.redezria.net 
 
 ----------------------------------------
 ---A REDEZRIAN INDUSTRIES PRODUCTION----
